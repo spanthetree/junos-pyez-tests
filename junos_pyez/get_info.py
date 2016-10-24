@@ -104,7 +104,10 @@ def print_facts(args, passwd, dev):
             rpc_cmd = COMMANDS[f]
             entries = rpc_cmd(dev).get()
             for k,v in entries.items():
-                print k,v
+                if 'key'.lower() in args.attr:
+                    print k
+                else:
+                    print k,v
 
 
 def main():
@@ -119,6 +122,7 @@ def main():
         hwtable, arptable ')
     parser.add_argument('-i', '--interface', help='Specify interface to check for mactable',
         default='all')
+    parser.add_argument('-t', '--attr', help='Attr to print - key, value, all')
 
     args = parser.parse_args()
 
