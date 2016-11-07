@@ -73,11 +73,17 @@ def print_facts(args, passwd, dev):
             for e in entries:
                 # ['status', 'instance', 'tag', 'name', 'members', 'created', 'owner']
                 member_vlan = ', '.join(str(i) for i in e.members)
-                print 'Name: {}, Tag: {}, Status: {}, Instance: {}, Members: {}'\
-                .format(e.name, e.tag, e.status, e.instance, member_vlan)
-                #pp.pprint(e.keys())
-                #pp.pprint(e.values())
-                #print "SFHQ,{},{},Active".format(vlan.tag, vlan.name)
+                if 'intmembers' in args.opt:
+                    print ''
+                    print e.name
+                    print member_vlan
+                else:
+                    print ''
+                    print 'Name: {}, Tag: {}, Status: {}, Instance: {}, Members: {}'\
+                    .format(e.name, e.tag, e.status, e.instance, member_vlan)
+                    #pp.pprint(e.keys())
+                    #pp.pprint(e.values())
+                    #print "SFHQ,{},{},Active".format(vlan.tag, vlan.name)
 
         # MK magic
         elif 'mactable' in f:
@@ -104,7 +110,7 @@ def print_facts(args, passwd, dev):
             rpc_cmd = COMMANDS[f]
             entries = rpc_cmd(dev).get()
             for k,v in entries.items():
-                if 'key'.lower() in args.attr:
+                if args.opt is 'int':
                     print k
                 else:
                     print k,v
@@ -122,7 +128,8 @@ def main():
         hwtable, arptable ')
     parser.add_argument('-i', '--interface', help='Specify interface to check for mactable',
         default='all')
-    parser.add_argument('-t', '--attr', help='Attr to print - key, value, all')
+    parser.add_argument('-o', '--opt', help='Options - int (interface),\
+        intmembers (members)')
 
     args = parser.parse_args()
 
@@ -140,10 +147,6 @@ def main():
             raise ValueError('%s is not a valid fact!' % args.fact)
     print "**Gathering {} from {} devices**".format(fact_list, len(args.device))
     for device in args.device:
-        print ''
-        print "========================================"
-        print(device)
-        print "========================================"
         dev = Device(host=device, user=args.user, password=passwd).open()
         print_facts(args, passwd, dev)
 
