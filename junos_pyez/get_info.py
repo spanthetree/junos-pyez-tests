@@ -18,7 +18,7 @@ from jnpr.junos import Device
 
 __author__ = 'David Woodruff'
 
-yml = '''
+arp = '''
 ---
 EtherSwTable:
   rpc: get-interface-ethernet-switching-table
@@ -135,7 +135,7 @@ def main():
 
     passwd = getpass.getpass()
 
-    globals().update(FactoryLoader().load(yaml.load(yml)))
+    globals().update(FactoryLoader().load(yaml.load(arp)))
 
     if args.fact is None:
         raise RuntimeError('You must define a fact to check!')
